@@ -1,0 +1,92 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "almond",
+  "name": "Docs",
+  "colors": {
+    "primary": "#60A5FA",
+    "light": "#60A5FA",
+    "dark": "#1E3A8A"
+  },
+  "favicon": "/favicon.svg",
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "fonts": {
+    "family": "Montserrat",
+    "source": "https://fonts.gstatic.com/s/googlesansflex/v5/t5sJIQcYNIWbFgDgAAzZ34auoVyXkJCOvp3SFWJbN5hF8Ju1x6sKCyp0l9sI40swNJwGpVd4AZzz0v6lJ4qFXNZhGjLvDSkV4USKMo6qQzwliVdHAy9jxTDHg_ugnAakpwGc-cxgUqDCIUI.woff2",
+    "format": "woff2"
+  },
+  "background": {
+    "decoration": "gradient"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "documentation/getting-started/prerequisites",
+              "documentation/getting-started/setup-backend",
+              "documentation/getting-started/setup-frontend"
+            ]
+          },
+          {
+            "group": "Architecture Overview",
+            "pages": [
+              "documentation/architecture/system-overview",
+              "documentation/architecture/backend-overview",
+              "documentation/architecture/frontend-overview"
+            ]
+          },
+          {
+            "group": "Basic Usage",
+            "pages": [
+              "documentation/usage/ui-interaction",
+              "documentation/usage/api-interaction"
+            ]
+          },
+          {
+            "group": "Best Practices",
+            "pages": [
+              "documentation/best-practices/development-guidelines",
+              "documentation/best-practices/deployment-tips"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Backend API",
+            "pages": [
+              "api-reference/backend-api/get-todos",
+              "api-reference/backend-api/post-todo",
+              "api-reference/backend-api/delete-todo",
+              "api-reference/backend-api/reorder-todos"
+            ]
+          },
+          {
+            "group": "Frontend API Consumption",
+            "pages": [
+              "api-reference/frontend-api/fetch-todos-usage",
+              "api-reference/frontend-api/add-todo-usage",
+              "api-reference/frontend-api/delete-todo-usage",
+              "api-reference/frontend-api/reorder-todo-usage"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/logo.png",
+    "dark": "/logo/logo.png"
+  }
+}
