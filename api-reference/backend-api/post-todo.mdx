@@ -1,0 +1,171 @@
+---
+title: 'POST /api/todos'
+description: 'Create a new todo item with JSON payload.'
+---
+
+# Overview
+
+The `POST /api/todos` endpoint allows clients to create new todo items in the Todos application. This endpoint accepts a JSON payload describing the new todo, persists it with an incremented ordering value in the backend database, and returns the created todo item.
+
+This API is typically used by frontend clients (e.g., a React app) to add user-created tasks to a persistent todo list.
+
+---
+
+## Table of Contents
+
+- [Request Format](#request-format)
+- [Response Format](#response-format)
+- [Behavior](#behavior)
+- [Example Usage](#example-usage)
+- [Integration Details](#integration-details)
+- [Related Endpoints](#related-endpoints)
+
+---
+
+## Request Format
+
+This endpoint accepts a JSON payload with the following shape:
+
+```json
+{
+  "title": "string"
+}
+```
+
+Only the `title` field is required, representing the name or description of the todo task to be created.
+
+### Example Request Body
+
+```json
+{
+  "title": "Buy groceries"
+}
+```
+
+---
+
+## Response Format
+
+On success, the API responds with the JSON representation of the newly created todo item, including its database-generated ID and an assigned order value.
+
+### Example Response
+
+```json
+{
+  "id": 7,
+  "title": "Buy groceries",
+  "completed": false,
+  "order": 7
+}
+```
+
+Fields:
+
+- `id`: Unique identifier for the todo item.
+- `title`: Title string supplied in the request.
+- `completed`: Boolean representing task completion status, defaulting to `false`.
+- `order`: Integer specifying the todo's position in the list, automatically set.
+
+---
+
+## Behavior
+
+- The server determines the new todo's `order` field by counting existing todos and placing the new item at the end of the list.
+- The todo is created with `completed` state initialized as `false`.
+- Validation on the input JSON ensures that the `title` is present; otherwise, the server will respond with an error.
+
+---
+
+## Example Usage
+
+### HTTP Request Using `curl`
+
+```bash
+curl -X POST http://localhost:8080/api/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Walk the dog"}'
+```
+
+### Sample Backend Implementation Snippet (Go / Gin / GORM)
+
+```go
+// Handler registers a new todo from JSON input
+func createTodoHandler(c *gin.Context) {
+  var todo models.Todo
+  if err := c.ShouldBindJSON(&todo); err != nil {
+    c.JSON(400, gin.H{"error": "Invalid input JSON"})
+    return
+  }
+
+  // Assign order as count of existing todos + 1
+  var count int64
+  db.Model(&models.Todo{}).Count(&count)
+  todo.Order = int(count) + 1
+  todo.Completed = false
+
+  if err := db.Create(&todo).Error; err != nil {
+    c.JSON(500, gin.H{"error": "Failed to create todo"})
+    return
+  }
+
+  c.JSON(201, todo)
+}
+```
+
+---
+
+## Integration Details
+
+- **Persistence:** Uses GORM ORM connected to a SQLite database instance to store todos persistently.
+- **Data Model:** Relies on a `Todo` model with fields including `ID`, `Title`, `Completed`, and `Order` to track list position.
+- **Framework:** The endpoint is part of a Gin HTTP server, registered under `/api/todos` with the POST method.
+- **CORS:** Configured with CORS middleware to allow requests from frontend clients running on different origins.
+- **Ordering Management:** The `order` field is automatically managed by counting existing rows, ensuring new todos append logically.
+
+### Integration Touchpoints
+
+- The React frontend calls this endpoint to create new tasks when users submit the todo form.
+- After response, the frontend updates the displayed list with the new todo item.
+- Backend middleware handles JSON request parsing and response serialization.
+
+---
+
+## Mermaid Diagram: Endpoint Request Flow
+
+```mermaid
+flowchart TD
+  Client["Client Application"] -->|POST /api/todos
+    Server["Gin HTTP Server"]
+  Server -->|Bind JSON| Parse["Parse JSON to Todo Model"]
+  Parse --> CheckInput{Is "title" present?}
+  CheckInput -- No --> ErrResp["400 Bad Request"]
+  CheckInput -- Yes --> Count["Count existing todos in DB"]
+  Count --> Create["Assign order and Create Todo in DB"]
+  Create -->|Success| Resp["201 Created with Todo JSON"]
+  Create -->|Fail| ErrDB["500 Internal Server Error"]
+  ErrDB --> Server
+  Resp --> Client
+  ErrResp --> Client
+```
+
+---
+
+## Related Endpoints
+
+- [`GET /api/todos`](#) - Retrieve the list of all todo items.
+- [`PUT /api/todos/reorder`](#) - Update the order of todos after drag-and-drop reordering.
+- [`DELETE /api/todos/:id`](#) - Remove a todo item by its ID.
+
+---
+
+## Source
+
+Refer to the server implementation for this endpoint in the source code:  
+[main.go](main.go) (look for `r.POST("/api/todos"`)  
+[models.Todo definition](todos-app/models)  
+
+---
+
+<Check>
+**Tip:** When developing frontend features, use this endpoint to add todos dynamically and ensure you refresh your todo list afterwards by calling the GET endpoint.
+</Check>
